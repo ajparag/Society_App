@@ -8,8 +8,20 @@
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
-        .qr-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; color: white; }
-        #qrImage { width: 250px; height: 250px; background: white; border-radius: 15px; padding: 10px; }
+        .qr-modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(15, 23, 42, 0.9); 
+            backdrop-filter: blur(8px);
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+            color: white; 
+        }
+        #qrImage { width: 260px; height: 260px; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 0 30px rgba(79, 70, 229, 0.5); }
+        .module-coming-soon { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body class="p-3">
@@ -18,56 +30,117 @@
         <header class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="fw-bold mb-0">Triumph Tower</h4>
-                <p class="text-muted small mb-0">Flat A-502 | Parag Agarwal</p>
+                <p class="text-muted small mb-0">Sunder Nagar | Parag Agarwal</p>
             </div>
-            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">PA</div>
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">PA</div>
         </header>
 
         <div class="card app-card mb-3">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <small class="text-muted d-block">Maintenance Dues</small>
-                    <h4 class="mb-0 text-success">Paid</h4>
+                    <h4 class="mb-0 text-success fw-bold">Paid</h4>
                 </div>
-                <button class="btn btn-sm btn-outline-primary">View Ledger</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="triggerModule('Payments')">Ledger</button>
             </div>
         </div>
 
         <div class="action-grid">
             <div class="card app-card text-center py-3" onclick="showVisitorForm()">
-                <div class="fs-2 mb-1">🛡️</div>
+                <div class="action-icon mx-auto">🛡️</div>
                 <span class="small fw-bold">Guest Pass</span>
             </div>
-            <div class="card app-card text-center py-3">
-                <div class="fs-2 mb-1">🧼</div>
+            <div class="card app-card text-center py-3" onclick="triggerModule('Daily Help')">
+                <div class="action-icon mx-auto">🧼</div>
                 <span class="small fw-bold">Daily Help</span>
             </div>
-            <div class="card app-card text-center py-3">
-                <div class="fs-2 mb-1">🎾</div>
+            <div class="card app-card text-center py-3" onclick="triggerModule('Amenities')">
+                <div class="action-icon mx-auto">🎾</div>
                 <span class="small fw-bold">Amenities</span>
             </div>
-            <div class="card app-card text-center py-3">
-                <div class="fs-2 mb-1">📢</div>
+            <div class="card app-card text-center py-3" onclick="triggerModule('Notices')">
+                <div class="action-icon mx-auto">📢</div>
                 <span class="small fw-bold">Notices</span>
             </div>
         </div>
 
-        <div class="card app-card mt-4">
-            <h6 class="fw-bold mb-2">Society Green Score</h6>
-            <div class="progress" style="height: 10px; border-radius: 5px;">
-                <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+        <div id="visitorForm" class="mt-4 card app-card shadow-lg" style="display: none;">
+            <h6 class="fw-bold mb-3">Pre-Authorize Guest</h6>
+            <div class="mb-3">
+                <input type="text" id="visitorName" class="form-control form-control-lg" placeholder="Guest Name">
             </div>
-            <p class="small text-muted mt-2 mb-0">375kg waste processed this month. <b>Great job!</b></p>
+            <button onclick="generatePass()" class="btn btn-primary-modern w-100">Generate QR Pass</button>
         </div>
 
-        <div id="visitorForm" class="mt-4 card app-card" style="display: none;">
-            <h6 class="fw-bold mb-3">Pre-Authorize Guest</h6>
-            <input type="text" id="visitorName" class="form-control mb-2" placeholder="Guest Name">
-            <button onclick="generatePass()" class="btn btn-primary-modern w-100">Generate Pass</button>
+        <div class="card app-card mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0">Sustainability Goal</h6>
+                <span class="badge bg-success rounded-pill">On Track</span>
+            </div>
+            <div class="progress" style="height: 10px;">
+                <div class="progress-bar" role="progressbar" style="width: 75%"></div>
+            </div>
+            <p class="small text-muted mt-2 mb-0 text-center">We've saved <b>120 units</b> of electricity this week!</p>
         </div>
     </div>
 
-    <div id="qrModal" class="qr-modal" onclick="this.style.display='none'">
-        <img id="qrImage" src="" alt="QR Code">
-        <h5 class="mt-3 fw-bold">Guest Entry Pass</h5>
-        <p>Tap anywhere to close</p
+    <div id="qrModal" class="qr-modal" onclick="closeModal()">
+        <img id="qrImage" src="" alt="QR Code Pass">
+        <h5 class="mt-4 fw-bold">Guest Entry Pass</h5>
+        <p class="text-white-50 small">Share a screenshot or scan at gate</p>
+        <button class="btn btn-outline-light mt-2 rounded-pill px-4">Close</button>
+    </div>
+
+    <script>
+        // Toggle the Visitor Form
+        function showVisitorForm() {
+            const form = document.getElementById('visitorForm');
+            const isHidden = form.style.display === 'none';
+            form.style.display = isHidden ? 'block' : 'none';
+            if(isHidden) form.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Placeholder for future modules
+        function triggerModule(name) {
+            alert(name + " module is being optimized for Triumph Tower. Check back soon!");
+        }
+
+        // Generate QR Code via API
+        async function generatePass() {
+            const visitorName = document.getElementById('visitorName').value;
+            if(!visitorName) {
+                alert("Please enter a guest name.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/visitor/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        visitorName: visitorName, 
+                        flatNumber: "A-502", 
+                        residentName: "Parag Agarwal" 
+                    })
+                });
+
+                const data = await response.json();
+
+                if(data.success) {
+                    document.getElementById('qrImage').src = data.qrImage;
+                    document.getElementById('qrModal').style.display = 'flex';
+                } else {
+                    alert("Error connecting to society server.");
+                }
+            } catch (error) {
+                console.error("API Error:", error);
+                alert("Failed to generate pass. Please check your connection.");
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
