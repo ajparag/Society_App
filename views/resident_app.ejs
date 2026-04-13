@@ -1,8 +1,93 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Resident App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Portal | Triumph Tower</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .qr-container { display: none; text-align: center; margin-top: 20px; }
+        #qrImage { width: 200px; height: 200px; border: 5px solid white; border-radius: 15px; }
+    </style>
 </head>
-<body>
-    <h1>Welcome to the Resident App</h1>
+<body class="p-3">
+
+    <div class="container-sm">
+        <header class="mb-4">
+            <h4 class="fw-bold mb-0">Triumph Tower</h4>
+            <p class="text-muted small">Resident Self-Service</p>
+        </header>
+
+        <div class="card app-card mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted d-block">Monthly Maintenance</small>
+                    <span class="badge bg-success">Status: Paid</span>
+                </div>
+                <h4 class="mb-0">₹0</h4>
+            </div>
+        </div>
+
+        <div class="card app-card mb-3">
+            <h6 class="fw-bold mb-2">Society Sustainability</h6>
+            <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+            </div>
+            <p class="small text-muted mt-2 mb-0">Goal: 500kg waste recycled. We're at 375kg!</p>
+        </div>
+
+        <div class="card app-card">
+            <h6 class="fw-bold mb-3">Guest Entry Pass</h6>
+            <div class="mb-3">
+                <input type="text" id="visitorName" class="form-control" placeholder="Guest Full Name">
+            </div>
+            <div class="mb-3">
+                <input type="text" id="flatNumber" class="form-control" placeholder="Flat Number (e.g., A-101)">
+            </div>
+            <button onclick="generatePass()" class="btn btn-primary-modern w-100 py-3">Generate QR Pass</button>
+
+            <div id="qrResult" class="qr-container">
+                <hr>
+                <p class="small fw-bold">Scan this at the Gate</p>
+                <img id="qrImage" src="" alt="QR Pass">
+                <p id="passName" class="mt-2 mb-0 fw-bold text-primary"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function generatePass() {
+            const visitorName = document.getElementById('visitorName').value;
+            const flatNumber = document.getElementById('flatNumber').value;
+
+            if (!visitorName || !flatNumber) {
+                alert("Please enter both Name and Flat Number");
+                return;
+            }
+
+            // Call the server API we created in server.js
+            const response = await fetch('/api/visitor/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    visitorName, 
+                    flatNumber,
+                    residentName: "Parag Agarwal" // Hardcoded for now
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Show the QR code area and inject the image
+                document.getElementById('qrResult').style.display = 'block';
+                document.getElementById('qrImage').src = data.qrImage;
+                document.getElementById('passName').innerText = "Pass for: " + visitorName;
+            } else {
+                alert("Error generating pass. Try again.");
+            }
+        }
+    </script>
 </body>
 </html>
