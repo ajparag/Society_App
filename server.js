@@ -5,7 +5,6 @@ const path = require('path');
 const app = express();
 
 // --- CONFIGURATION ---
-// The MONGO_URI should be set in your Render Environment Variables for security
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/societyDB';
 
 mongoose.connect(MONGO_URI)
@@ -18,41 +17,29 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public')); // Links your public/ folder for CSS/JS
+app.use(express.static('public'));
 
 // --- DATABASE MODELS ---
-
-// Visitor & QR Pass Schema
 const visitorSchema = new mongoose.Schema({
     residentName: String,
     flatNumber: String,
     visitorName: String,
-    status: { type: String, default: 'Pending' }, // Pending, Approved, Denied
+    status: { type: String, default: 'Pending' },
     qrData: String,
     createdAt: { type: Date, default: Date.now }
 });
 
-// Sustainability Tracker Schema
-const sustainabilitySchema = new mongoose.Schema({
-    category: String, // e.g., 'Waste', 'Water', 'Electricity'
-    currentValue: Number,
-    targetValue: Number,
-    lastUpdated: { type: Date, default: Date.now }
-});
-
 const Visitor = mongoose.model('Visitor', visitorSchema);
-const Sustainability = mongoose.model('Sustainability', sustainabilitySchema);
 
 // --- ROUTES ---
 
-// 1. LANDING PAGE: Selection between Resident and Admin
+// 1. Home / Selection Page
 app.get('/', (req, res) => {
     res.render('index');
 });
 
-// 2. RESIDENT PORTAL: Main View
-app.get('/resident', async (req, res) => {
-    // We could fetch sustainability data here to make it dynamic
+// 2. RESIDENT PORTAL
+app.get('/resident', (req, res) => {
     res.render('resident_app');
 });
 
@@ -60,8 +47,6 @@ app.get('/resident', async (req, res) => {
 app.post('/api/visitor/request', async (req, res) => {
     try {
         const { visitorName, flatNumber, residentName } = req.body;
-        
-        // Create a unique identifier for the QR code
         const qrString = `TOW-VISIT-${Date.now()}-${flatNumber}`;
         
         const newVisitor = new Visitor({
@@ -72,8 +57,6 @@ app.post('/api/visitor/request', async (req, res) => {
         });
 
         await newVisitor.save();
-        
-        // Generate QR Code as a Data URL for the mobile screen
         const qrImage = await QRCode.toDataURL(qrString);
         res.json({ success: true, qrImage });
     } catch (err) {
@@ -81,8 +64,44 @@ app.post('/api/visitor/request', async (req, res) => {
     }
 });
 
-// 4. ADMIN DASHBOARD: View all requests
+// 4. ADMIN DASHBOARD
 app.get('/admin', async (req, res) => {
     try {
-        // Fetch all requests, showing newest first
-        const requests = await Visitor.find().sort({
+        const requests = await Visitor.find().sort({ createdAt: -1 });
+        res.render('admin_dashboard', { requests });
+    } catch (err) {
+        res.send("Error loading Admin Dashboard");
+    }
+});
+
+// 5. ADMIN API: Update Status
+app.post('/api/visitor/update-status', async (req, res) => {
+    try {
+        const { id, status } = req.body;
+        await Visitor.findByIdAndUpdate(id, { status: status });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// 6. GUARD API: Verify QR
+app.get('/api/visitor/verify', async (req, res) => {
+    try {
+        const { qrData } = req.query;
+        const visitor = await Visitor.findOne({ qrData: qrData });
+        if (visitor && visitor.status === 'Approved') {
+            res.json({ approved: true, name: visitor.visitorName, flat: visitor.flatNumber });
+        } else {
+            res.json({ approved: false, message: visitor ? "Wait for Admin Approval" : "Invalid Pass" });
+        }
+    } catch (err) {
+        res.status(500).json({ approved: false });
+    }
+});
+
+// --- SERVER START ---
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Triumph Tower App is live on port ${PORT}`);
+});
