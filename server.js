@@ -89,6 +89,27 @@ app.post('/api/visitor/update-status', async (req, res) => {
     res.json({ success: true });
 });
 
+// 1. Staff Schema (Maids, Drivers, etc.)
+const staffSchema = new mongoose.Schema({
+    name: String,
+    role: String, // e.g., 'Maid', 'Driver'
+    assignedToFlat: String,
+    entryCode: String,
+    isInside: { type: Boolean, default: false }
+});
+
+// 2. Amenities Schema (Clubhouse, Gym)
+const bookingSchema = new mongoose.Schema({
+    amenityName: String,
+    residentName: String,
+    flatNumber: String,
+    date: Date,
+    slot: String // e.g., '6PM-7PM'
+});
+
+const Staff = mongoose.model('Staff', staffSchema);
+const Booking = mongoose.model('Booking', bookingSchema);
+
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
