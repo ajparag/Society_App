@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triumph Tower | Smart Society</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: #f0f2f5; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .selection-card { 
+            transition: transform 0.3s ease; 
+            cursor: pointer; 
+            border: none; 
+            border-radius: 20px; 
+            overflow: hidden;
+        }
+        .selection-card:hover { transform: translateY(-10px); }
+        .icon-box { font-size: 3rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-dark">Welcome to Triumph Tower</h2>
+            <p class="text-muted">Select your portal to continue</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card selection-card shadow-lg p-4 text-center" onclick="location.href='/resident'">
+                    <div class="icon-box">🏠</div>
+                    <h4 class="fw-bold">Resident App</h4>
+                    <p class="small text-muted">Manage guests, pay dues, and track sustainability.</p>
+                    <button class="btn btn-primary-modern w-100">Enter Resident Portal</button>
+                </div>
+            </div>
+            <div class="col-md-5 col-lg-4">
+                <div class="card selection-card shadow-lg p-4 text-center" onclick="location.href='/admin'">
+                    <div class="icon-box">🏢</div>
+                    <h4 class="fw-bold">Committee Admin</h4>
+                    <p class="small text-muted">Approve requests, manage society data, and send notices.</p>
+                    <button class="btn btn-dark w-100" style="border-radius: 12px;">Enter Admin Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
