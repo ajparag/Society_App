@@ -1,48 +1,162 @@
-/* Custom Modern Styling */
+/* --- Google Fonts Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* --- Root Variables for Consistent Branding --- */
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --primary: #4f46e5;       /* Indigo */
+    --primary-dark: #3730a3;
+    --secondary: #7c3aed;     /* Violet */
+    --success: #10b981;       /* Emerald */
+    --danger: #ef4444;        /* Rose */
+    --warning: #f59e0b;       /* Amber */
+    --background: #f8fafc;    /* Slate 50 */
+    --card-bg: #ffffff;
+    --text-main: #1e293b;     /* Slate 800 */
+    --text-muted: #64748b;    /* Slate 500 */
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+}
+
+/* --- Global Reset --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    background-color: #f0f2f5;
-    -webkit-tap-highlight-color: transparent;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--background);
+    color: var(--text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Glassmorphism Card Effect */
+/* --- App Cards (The MyGate Look) --- */
 .app-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow);
     padding: 20px;
-    margin-bottom: 15px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Modern Buttons */
+.app-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.06);
+}
+
+/* --- Buttons --- */
 .btn-primary-modern {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
+    padding: 14px 24px;
     font-weight: 600;
-    transition: transform 0.2s ease;
+    letter-spacing: -0.01em;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
 }
 
 .btn-primary-modern:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
 }
 
-/* Quick Action Icons */
+/* --- Action Grid (Mobile) --- */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
 .action-icon {
-    width: 50px;
-    height: 50px;
-    background: #eef2ff;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    background: #f1f5f9;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6366f1;
-    margin-bottom: 8px;
+    font-size: 1.5rem;
+    margin: 0 auto 12px;
+    color: var(--primary);
+}
+
+/* --- Progress Bar (Sustainability) --- */
+.progress {
+    height: 10px !important;
+    background-color: #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+    border-radius: 20px;
+}
+
+/* --- Status Badges --- */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.bg-pending { background-color: #fef3c7; color: #92400e; }
+.bg-approved { background-color: #d1fae5; color: #065f46; }
+
+/* --- Navigation & Landing --- */
+.selection-card {
+    border: none;
+    border-radius: var(--radius-lg);
+    background: white;
+    transition: transform 0.3s ease;
+}
+
+.navbar {
+    background: white !important;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.navbar-brand {
+    color: var(--primary) !important;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+/* --- QR Code UI --- */
+.qr-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.9); /* Darker backdrop */
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#qrImage {
+    background: white;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(79, 70, 229, 0.4);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .app-card {
+        padding: 16px;
+    }
+    
+    h4 {
+        font-size: 1.25rem;
+    }
 }
